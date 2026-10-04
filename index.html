@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Multiplexer & Demultiplexer Simulator</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #08111f;
+    color: white;
+}
+
+.container {
+    width: 95%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 25px 0;
+}
+
+/* HEADER */
+
+.header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.header h1 {
+    color: #00e5ff;
+    margin-bottom: 8px;
+    font-size: 32px;
+}
+
+.header p {
+    color: #9ca9bd;
+    font-size: 16px;
+}
+
+/* CARDS */
+
+.card {
+    background: #121e33;
+    border: 1px solid #223452;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+.card-title {
+    color: #00e5ff;
+    font-size: 19px;
+    font-weight: bold;
+    margin-bottom: 18px;
+}
+
+/* INPUTS */
+
+.input-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.input-box label {
+    display: block;
+    margin-bottom: 8px;
+    color: #dce5f2;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    background: #08111f;
+    border: 1px solid #304765;
+    border-radius: 8px;
+    color: #00e5ff;
+    font-size: 16px;
+    font-family: monospace;
+    outline: none;
+}
+
+input:focus {
+    border-color: #00e5ff;
+}
+
+/* BUTTONS */
+
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+button {
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.15);
+}
+
+.random {
+    background: #7c3aed;
+}
+
+.mux {
+    background: #0077aa;
+}
+
+.demux {
+    background: #00875a;
+}
+
+.error {
+    background: #b83232;
+}
+
+.clear {
+    background: #596579;
+}
+
+/* FLOW */
+
+.flow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+.block {
+    padding: 15px 25px;
+    border-radius: 10px;
+    background: #172945;
+    border: 2px solid #00e5ff;
+    text-align: center;
+    font-weight: bold;
+}
+
+.arrow {
+    color: #00e5ff;
+    font-size: 28px;
+}
+
+/* OUTPUT */
+
+.signal-display {
+    background: #07101d;
+    padding: 15px;
+    border-radius: 8px;
+    color: #00e5ff;
+    font-family: monospace;
+    font-size: 18px;
+    word-break: break-all;
+    min-height: 50px;
+}
+
+.channel {
+    background: #050b14;
+    border: 1px solid #1e395b;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.channel-title {
+    color: #9ca9bd;
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+
+.channel-stream {
+    color: #00ff88;
+    font-family: monospace;
+    font-size: 18px;
+    word-break: break-all;
+}
+
+/* OUTPUT GRID */
+
+.output-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.output-box {
+    background: #172945;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+}
+
+.output-box h3 {
+    margin-top: 0;
+    color: #dce5f2;
+}
+
+.output-value {
+    color: #00e5ff;
+    font-family: monospace;
+    font-size: 18px;
+    word-break: break-all;
+}
+
+/* STATUS */
+
+.status {
+    text-align: center;
+    padding: 15px;
+    border-radius: 10px;
+    background: #172945;
+    color: #00e5ff;
+    font-weight: bold;
+    font-size: 17px;
+}
+
+/* INFO */
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.info-box {
+    background: #172945;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.info-box h3 {
+    color: #00e5ff;
+}
+
+/* FOOTER */
+
+.footer {
+    text-align: center;
+    color: #697891;
+    margin-top: 30px;
+    padding-bottom: 20px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width: 800px) {
+
+    .input-grid,
+    .output-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(max-width: 500px) {
+
+    .input-grid,
+    .output-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>
+            MULTIPLEXER & DEMULTIPLEXER
+        </h1>
+
+        <p>
+            Time Division Multiplexing (TDM) Simulator
+        </p>
+
+    </div>
+
+
+    <!-- INPUT -->
+
+    <div class="card">
+
+        <div class="card-title">
+            1. INPUT SIGNALS
+        </div>
+
+        <div class="input-grid">
+
+            <div class="input-box">
+                <label>Signal 1</label>
+                <input
+                    type="text"
+                    id="signal1"
+                    placeholder="e.g. 10110101"
+                >
+            </div>
+
+            <div class="input-box">
+                <label>Signal 2</label>
+                <input
+                    type="text"
+                    id="signal2"
+                    placeholder="e.g. 01001110"
+                >
+            </div>
+
+            <div class="input-box">
+                <label>Signal 3</label>
+                <input
+                    type="text"
+                    id="signal3"
+                    placeholder="e.g. 11010011"
+                >
+            </div>
+
+            <div class="input-box">
+                <label>Signal 4</label>
+                <input
+                    type="text"
+                    id="signal4"
+                    placeholder="e.g. 00111010"
+                >
+            </div>
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                class="random"
+                onclick="generateRandom()">
+                🎲 GENERATE RANDOM
+            </button>
+
+            <button
+                class="mux"
+                onclick="multiplex()">
+                ▶ MULTIPLEX
+            </button>
+
+            <button
+                class="demux"
+                onclick="demultiplex()">
+                ◀ DEMULTIPLEX
+            </button>
+
+            <button
+                class="error"
+                onclick="simulateError()">
+                ⚠ SIMULATE ERROR
+            </button>
+
+            <button
+                class="clear"
+                onclick="clearAll()">
+                CLEAR
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- SYSTEM FLOW -->
+
+    <div class="card">
+
+        <div class="card-title">
+            2. SYSTEM FLOW
+        </div>
+
+        <div class="flow">
+
+            <div class="block">
+                4 INPUTS
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="block">
+                MUX
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="block">
+                CHANNEL
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="block">
+                DEMUX
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="block">
+                4 OUTPUTS
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MUX -->
+
+    <div class="card">
+
+        <div class="card-title">
+            3. MULTIPLEXER OUTPUT
+        </div>
+
+        <div
+            class="signal-display"
+            id="combinedSignal">
+            ---
+        </div>
+
+    </div>
+
+
+    <!-- CHANNEL -->
+
+    <div class="card">
+
+        <div class="card-title">
+            4. COMMUNICATION CHANNEL
+        </div>
+
+        <div class="channel">
+
+            <div class="channel-title">
+                TDM TRANSMISSION STREAM
+            </div>
+
+            <div
+                class="channel-stream"
+                id="channelStream">
+                ---
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DEMUX -->
+
+    <div class="card">
+
+        <div class="card-title">
+            5. DEMULTIPLEXER OUTPUT
+        </div>
+
+        <div class="output-grid">
+
+            <div class="output-box">
+
+                <h3>Signal 1</h3>
+
+                <div
+                    class="output-value"
+                    id="output1">
+                    ---
+                </div>
+
+            </div>
+
+
+            <div class="output-box">
+
+                <h3>Signal 2</h3>
+
+                <div
+                    class="output-value"
+                    id="output2">
+                    ---
+                </div>
+
+            </div>
+
+
+            <div class="output-box">
+
+                <h3>Signal 3</h3>
+
+                <div
+                    class="output-value"
+                    id="output3">
+                    ---
+                </div>
+
+            </div>
+
+
+            <div class="output-box">
+
+                <h3>Signal 4</h3>
+
+                <div
+                    class="output-value"
+                    id="output4">
+                    ---
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- STATUS -->
+
+    <div class="card">
+
+        <div class="card-title">
+            6. TRANSMISSION STATUS
+        </div>
+
+        <div
+            class="status"
+            id="status">
+            Ready — Enter signals to begin.
+        </div>
+
+    </div>
+
+
+    <!-- INFORMATION -->
+
+    <div class="card">
+
+        <div class="card-title">
+            7. PROJECT INFORMATION
+        </div>
+
+        <div class="info-grid">
+
+            <div class="info-box">
+
+                <h3>Multiplexing</h3>
+
+                <p>
+                    Combines multiple input signals
+                    into a single transmission stream.
+                </p>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <h3>TDM</h3>
+
+                <p>
+                    Each signal is assigned a time slot
+                    on the common communication channel.
+                </p>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <h3>Demultiplexing</h3>
+
+                <p>
+                    Separates the combined stream and
+                    reconstructs the original signals.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+
+        Multiplexer & Demultiplexer Simulator |
+        TDM Based PBL Project
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   GLOBAL VARIABLE
+   ===================================================== */
+
+let combinedSignal = "";
+
+
+/* =====================================================
+   GET INPUT SIGNALS
+   ===================================================== */
+
+function getSignals() {
+
+    const signals = [
+
+        document.getElementById("signal1").value.trim(),
+
+        document.getElementById("signal2").value.trim(),
+
+        document.getElementById("signal3").value.trim(),
+
+        document.getElementById("signal4").value.trim()
+
+    ];
+
+
+    /* Check empty */
+
+    for (let signal of signals) {
+
+        if (signal === "") {
+
+            alert("Please enter all four signals.");
+
+            return null;
+        }
+    }
+
+
+    /* Check binary */
+
+    for (let signal of signals) {
+
+        if (!/^[01]+$/.test(signal)) {
+
+            alert(
+                "Signals must contain only 0 and 1."
+            );
+
+            return null;
+        }
+    }
+
+
+    /* Check same length */
+
+    const length = signals[0].length;
+
+    for (let signal of signals) {
+
+        if (signal.length !== length) {
+
+            alert(
+                "All four signals must have the same length."
+            );
+
+            return null;
+        }
+    }
+
+
+    return signals;
+}
+
+
+/* =====================================================
+   MULTIPLEXER
+   ===================================================== */
+
+function multiplex() {
+
+    const signals = getSignals();
+
+    if (!signals) {
+        return;
+    }
+
+
+    combinedSignal = "";
+
+
+    const length = signals[0].length;
+
+
+    /*
+       TDM ORDER:
+
+       S1 → S2 → S3 → S4
+
+       Then repeat.
+    */
+
+    for (let i = 0; i < length; i++) {
+
+        for (let j = 0; j < 4; j++) {
+
+            combinedSignal += signals[j][i];
+
+        }
+
+    }
+
+
+    document.getElementById(
+        "combinedSignal"
+    ).textContent = combinedSignal;
+
+
+    document.getElementById(
+        "channelStream"
+    ).textContent = combinedSignal;
+
+
+    document.getElementById(
+        "status"
+    ).textContent =
+        "✓ Multiplexing completed successfully.";
+
+
+    document.getElementById(
+        "status"
+    ).style.color = "#00ff88";
+
+}
+
+
+/* =====================================================
+   DEMULTIPLEXER
+   ===================================================== */
+
+function demultiplex() {
+
+    if (combinedSignal === "") {
+
+        alert(
+            "Please perform Multiplexing first."
+        );
+
+        return;
+    }
+
+
+    const signals = getSignals();
+
+    if (!signals) {
+        return;
+    }
+
+
+    const recovered = [
+
+        "",
+
+        "",
+
+        "",
+
+        ""
+
+    ];
+
+
+    let index = 0;
+
+    const length = signals[0].length;
+
+
+    /*
+       Read the combined stream:
+
+       bit 1 → S1
+       bit 2 → S2
+       bit 3 → S3
+       bit 4 → S4
+
+       Repeat.
+    */
+
+    for (let i = 0; i < length; i++) {
+
+        for (let j = 0; j < 4; j++) {
+
+            recovered[j] +=
+                combinedSignal[index];
+
+            index++;
+
+        }
+
+    }
+
+
+    /* Display */
+
+    document.getElementById(
+        "output1"
+    ).textContent = recovered[0];
+
+
+    document.getElementById(
+        "output2"
+    ).textContent = recovered[1];
+
+
+    document.getElementById(
+        "output3"
+    ).textContent = recovered[2];
+
+
+    document.getElementById(
+        "output4"
+    ).textContent = recovered[3];
+
+
+    /* Compare */
+
+    let success = true;
+
+
+    for (let i = 0; i < 4; i++) {
+
+        if (signals[i] !== recovered[i]) {
+
+            success = false;
+
+        }
+
+    }
+
+
+    const status =
+        document.getElementById("status");
+
+
+    if (success) {
+
+        status.textContent =
+            "✓ TRANSMISSION SUCCESSFUL — ALL SIGNALS RECOVERED";
+
+        status.style.color =
+            "#00ff88";
+
+    } else {
+
+        status.textContent =
+            "⚠ TRANSMISSION ERROR — SIGNALS DO NOT MATCH";
+
+        status.style.color =
+            "#ff4444";
+
+    }
+
+}
+
+
+/* =====================================================
+   ERROR SIMULATION
+   ===================================================== */
+
+function simulateError() {
+
+    if (combinedSignal === "") {
+
+        alert(
+            "Please perform Multiplexing first."
+        );
+
+        return;
+    }
+
+
+    let bits =
+        combinedSignal.split("");
+
+
+    /* Random position */
+
+    const position =
+        Math.floor(
+            Math.random() * bits.length
+        );
+
+
+    /* Flip bit */
+
+    if (bits[position] === "0") {
+
+        bits[position] = "1";
+
+    } else {
+
+        bits[position] = "0";
+
+    }
+
+
+    combinedSignal =
+        bits.join("");
+
+
+    /* Update screen */
+
+    document.getElementById(
+        "combinedSignal"
+    ).textContent = combinedSignal;
+
+
+    document.getElementById(
+        "channelStream"
+    ).textContent = combinedSignal;
+
+
+    const status =
+        document.getElementById("status");
+
+
+    status.textContent =
+        "⚠ ERROR INTRODUCED AT BIT POSITION "
+        + (position + 1);
+
+
+    status.style.color =
+        "#ff4444";
+
+
+    /* Clear old output */
+
+    document.getElementById(
+        "output1"
+    ).textContent = "---";
+
+
+    document.getElementById(
+        "output2"
+    ).textContent = "---";
+
+
+    document.getElementById(
+        "output3"
+    ).textContent = "---";
+
+
+    document.getElementById(
+        "output4"
+    ).textContent = "---";
+
+}
+
+
+/* =====================================================
+   RANDOM SIGNAL GENERATOR
+   ===================================================== */
+
+function generateRandom() {
+
+    const length = 8;
+
+
+    for (let signal = 1; signal <= 4; signal++) {
+
+        let value = "";
+
+
+        for (let i = 0; i < length; i++) {
+
+            value +=
+                Math.random() < 0.5
+                ? "0"
+                : "1";
+
+        }
+
+
+        document.getElementById(
+            "signal" + signal
+        ).value = value;
+
+    }
+
+
+    resetOutputs();
+
+
+    document.getElementById(
+        "status"
+    ).textContent =
+        "✓ Random signals generated. Ready for multiplexing.";
+
+
+    document.getElementById(
+        "status"
+    ).style.color =
+        "#00e5ff";
+
+}
+
+
+/* =====================================================
+   RESET
+   ===================================================== */
+
+function resetOutputs() {
+
+    combinedSignal = "";
+
+
+    document.getElementById(
+        "combinedSignal"
+    ).textContent = "---";
+
+
+    document.getElementById(
+        "channelStream"
+    ).textContent = "---";
+
+
+    document.getElementById(
+        "output1"
+    ).textContent = "---";
+
+
+    document.getElementById(
+        "output2"
+    ).textContent = "---";
+
+
+    document.getElementById(
+        "output3"
+    ).textContent = "---";
+
+
+    document.getElementById(
+        "output4"
+    ).textContent = "---";
+
+}
+
+
+/* =====================================================
+   CLEAR EVERYTHING
+   ===================================================== */
+
+function clearAll() {
+
+    document.getElementById(
+        "signal1"
+    ).value = "";
+
+
+    document.getElementById(
+        "signal2"
+    ).value = "";
+
+
+    document.getElementById(
+        "signal3"
+    ).value = "";
+
+
+    document.getElementById(
+        "signal4"
+    ).value = "";
+
+
+    resetOutputs();
+
+
+    document.getElementById(
+        "status"
+    ).textContent =
+        "Ready — Enter signals to begin.";
+
+
+    document.getElementById(
+        "status"
+    ).style.color =
+        "#00e5ff";
+
+}
+
+</script>
+
+</body>
+</html>
