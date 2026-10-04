@@ -991,24 +991,24 @@ function simulateError() {
    ===================================================== */
 
 function generateRandom() {
+    const length = Number(
+        prompt("Enter the number of bits for each signal:")
+    );
 
-    const length = 8;
-
+    if (!Number.isSafeInteger(length) || length <= 0 || length > 100000) {
+        alert("Please enter a valid number of bits (1 to 100000).");
+        return;
+    }
 
     for (let signal = 1; signal <= 4; signal++) {
 
         let value = "";
 
-
         for (let i = 0; i < length; i++) {
 
-            value +=
-                Math.random() < 0.5
-                ? "0"
-                : "1";
+            value += Math.random() < 0.5 ? "0" : "1";
 
         }
-
 
         document.getElementById(
             "signal" + signal
@@ -1016,23 +1016,19 @@ function generateRandom() {
 
     }
 
-
     resetOutputs();
-
 
     document.getElementById(
         "status"
     ).textContent =
         "✓ Random signals generated. Ready for multiplexing.";
 
-
     document.getElementById(
         "status"
-    ).style.color =
-        "#00e5ff";
+    ).style.color = "#00e5ff";
 
 }
-
+    
 
 /* =====================================================
    RESET
